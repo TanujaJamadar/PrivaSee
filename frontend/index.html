@@ -2,110 +2,372 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Data Sovereignty Auditor</title>
+    <title>NET-WATCH // GLOBAL INTEL</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 20px; }
-        
-        /* Header */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        h1 { margin: 0; color: #38bdf8; letter-spacing: 1px; }
-        
-        /* Input Area */
-        .controls { background: #1e293b; padding: 20px; border-radius: 12px; display: flex; gap: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        input { flex: 1; padding: 15px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 16px; outline: none; }
-        input:focus { border-color: #38bdf8; }
-        button { padding: 15px 30px; background: #38bdf8; border: none; border-radius: 8px; color: #0f172a; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.2s; }
-        button:hover { background: #7dd3fc; transform: translateY(-2px); }
-
-        /* Scoreboard Cards */
-        .stats-container { display: flex; gap: 20px; margin: 30px 0; }
-        .card { flex: 1; background: #1e293b; padding: 25px; border-radius: 12px; text-align: center; border: 1px solid #334155; }
-        .card h2 { font-size: 3.5rem; margin: 0; font-weight: 800; }
-        .card p { margin: 10px 0 0; color: #94a3b8; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
-        
-        /* Dynamic Colors for Cards */
-        .safe h2 { color: #22c55e; }
-        .danger h2 { color: #ef4444; }
-        .grade h2 { color: #38bdf8; text-shadow: 0 0 20px rgba(56, 189, 248, 0.5); }
-
-        /* Logs Area */
-        #statusText { margin-bottom: 10px; color: #f59e0b; font-style: italic; min-height: 20px; }
-        
-        #logs { 
-            background: #020617; 
-            border: 1px solid #334155; 
-            border-radius: 12px; 
-            height: 500px; 
-            overflow-y: scroll; 
-            padding: 10px; 
-            font-family: monospace; 
+        :root {
+            --bg-color: #020617;
+            --panel-bg: rgba(15, 23, 42, 0.6);
+            --border: 1px solid rgba(148, 163, 184, 0.1);
+            --accent-cyan: #06b6d4;
+            --accent-red: #f43f5e;
+            --accent-green: #10b981;
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
         }
-        
-        /* Scrollbar Styling */
-        #logs::-webkit-scrollbar { width: 8px; }
-        #logs::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
 
-        .log-entry { padding: 12px; margin-bottom: 8px; border-bottom: 1px solid #1e293b; font-size: 13px; color: #94a3b8; }
-        .log-entry:hover { background: #0f172a; }
+        * { box-sizing: border-box; scrollbar-width: thin; scrollbar-color: #334155 transparent; }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.05) 0%, transparent 20%);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden; /* Prevent body scroll */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER AREA */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 20px;
+            height: 80px;
+        }
+
+        .brand {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand span { color: var(--accent-cyan); }
         
-        /* Violation Styling */
-        .violation-entry { background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; color: #e2e8f0; }
+        .status-badge {
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--accent-cyan);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        /* SEARCH BAR */
+        .search-container {
+            display: flex;
+            gap: 10px;
+            width: 50%;
+        }
+
+        input {
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #334155;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(6, 182, 212, 0.2); }
+
+        button {
+            background: var(--accent-cyan);
+            color: #000;
+            border: none;
+            padding: 0 25px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+        }
+
+        button:hover { background: #22d3ee; }
+
+        /* MAIN DASHBOARD GRID */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* Map gets 2/3 space */
+            gap: 20px;
+            flex: 1;
+            min-height: 0; /* Critical for scrolling to work */
+        }
+
+        /* MAP CONTAINER */
+        .map-panel {
+            background: var(--panel-bg);
+            border: var(--border);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        #map { height: 100%; width: 100%; background: #0b0f19; }
+
+        .map-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 500;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        /* RIGHT SIDEBAR (STATS + LOGS) */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 0; /* Allows children to scroll */
+        }
+
+        /* STATS ROW */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border: var(--border);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .card-val { font-size: 2rem; font-weight: 700; display: block; line-height: 1; margin-bottom: 5px; }
+        .card-lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+        .grade-card {
+            background: var(--panel-bg);
+            border: var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .grade-circle {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-green);
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* LOGS PANEL */
+        .logs-panel {
+            flex: 1;
+            background: var(--panel-bg);
+            border: var(--border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Vital container rule */
+        }
+
+        .logs-header {
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #logs {
+            flex: 1;
+            overflow-y: auto; /* This makes ONLY the logs scroll */
+            padding: 0;
+        }
+
+        /* LOG ITEM STYLING */
+        .log-entry {
+            padding: 10px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            transition: background 0.2s;
+        }
+
+        .log-entry:hover { background: rgba(255,255,255,0.02); }
+
+        .log-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .domain { color: var(--text-main); font-weight: 600; }
+        .country { color: var(--text-muted); }
         
-        .method { color: #c084fc; font-weight: bold; margin-right: 10px; }
-        .badge-violation { background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-right: 5px; }
-        .violation-desc { color: #fca5a5; display: block; margin-top: 4px; padding-left: 20px; }
+        .badge-tracker { 
+            display: inline-block; 
+            background: rgba(244, 63, 94, 0.2); 
+            color: var(--accent-red); 
+            padding: 2px 6px; 
+            border-radius: 3px; 
+            font-size: 0.65rem; 
+            margin-right: 8px;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        .violation-row {
+            color: var(--accent-red);
+            padding-left: 10px;
+            border-left: 2px solid var(--accent-red);
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>🇮🇳 Data Sovereignty Auditor</h1>
-    </div>
-
-    <div class="controls">
-        <input type="text" id="urlInput" placeholder="Enter URL (e.g. https://hotstar.com)" value="https://shaadi.com">
-        <button onclick="startAudit()">Start Audit</button>
-    </div>
-
-    <div class="stats-container">
-        <div class="card safe">
-            <h2 id="reqCount">0</h2>
-            <p>Total Requests</p>
+    <header>
+        <div class="brand">
+            /// NET<span>WATCH</span>
         </div>
-        
-        <div class="card danger">
-            <h2 id="violationCount">0</h2>
-            <p>DPDP Violations</p>
+
+        <div class="search-container">
+            <input type="text" id="urlInput" placeholder="Target URL (e.g. https://netflix.com)" value="https://instagram.com">
+            <button onclick="startAudit()">SCAN</button>
         </div>
-        
-        <div class="card grade">
-            <h2 id="gradeScore">A</h2>
-            <p>Compliance Grade</p>
+
+        <div class="status-badge" id="status">SYSTEM READY</div>
+    </header>
+
+    <div class="dashboard">
+        <div class="map-panel">
+            <div id="map"></div>
+            <div class="map-overlay">
+                <div style="color: var(--text-muted); font-size: 0.7rem; margin-bottom: 5px;">ACTIVE DATA EXFILTRATION PATHS</div>
+                <div id="country-list" style="color: white; font-weight: 700;">Waiting for target...</div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            
+            <div class="stats-row">
+                <div class="card">
+                    <span class="card-val" id="reqCount" style="color: var(--accent-cyan)">0</span>
+                    <span class="card-lbl">Requests</span>
+                </div>
+                <div class="card">
+                    <span class="card-val" id="violationCount" style="color: var(--accent-red)">0</span>
+                    <span class="card-lbl">Violations</span>
+                </div>
+            </div>
+
+            <div class="grade-card">
+                <div>
+                    <div style="font-weight: 600;">Compliance Rating</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">DPDP Act 2023 Standard</div>
+                </div>
+                <div class="grade-circle" id="gradeCircle">A</div>
+            </div>
+
+            <div class="logs-panel">
+                <div class="logs-header">
+                    <span>LIVE TRAFFIC FEED</span>
+                    <span style="color: var(--text-muted)">ENCRYPTED</span>
+                </div>
+                <div id="logs">
+                    </div>
+            </div>
+
         </div>
     </div>
-
-    <div id="statusText">Ready to analyze...</div>
-    <div id="logs"></div>
 
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <script>
         const socket = io();
+        
+        // --- 1. FIXED MAP CONFIGURATION ---
+        const map = L.map('map', {
+            zoomControl: false,       // We remove default zoom buttons for cleaner look
+            minZoom: 2,               // Prevent zooming out too far
+            maxBounds: [[-90, -180], [90, 180]], // Restrict panning to one world
+            maxBoundsViscosity: 1.0   // Sticky bounds
+        }).setView([20.5937, 78.9629], 3); // Center on India
+
+        // Dark Matter Map Theme
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '',
+            noWrap: true,  // THIS FIXES THE REPEATING MAP ISSUE
+            bounds: [[-90, -180], [90, 180]]
+        }).addTo(map);
+
+        // User Home Marker
+        const homeMarker = L.circleMarker([20.5937, 78.9629], {
+            color: '#06b6d4',
+            fillColor: '#06b6d4',
+            fillOpacity: 1,
+            radius: 5
+        }).addTo(map).bindPopup("ORIGIN: INDIA");
+
+        // --- 2. LOGIC ---
         let totalRequests = 0;
         let totalViolations = 0;
-        let auditScore = 100; // Start with a perfect score
+        let score = 100;
+        let activeCountries = new Set();
+        let mapLayers = [];
 
         function startAudit() {
             const url = document.getElementById('urlInput').value;
-            if(!url) return alert("Please enter a URL");
+            if(!url) return;
 
-            // Reset UI
+            // UI Reset
             document.getElementById('logs').innerHTML = '';
-            document.getElementById('statusText').innerText = 'Initializing Audit Bot...';
+            document.getElementById('status').innerText = 'SCANNING NETWORK...';
+            document.getElementById('status').style.borderColor = 'var(--accent-green)';
+            document.getElementById('country-list').innerText = 'India (Origin)';
+            
             totalRequests = 0;
             totalViolations = 0;
-            auditScore = 100;
+            score = 100;
+            activeCountries.clear();
             updateStats();
+
+            // Clear Map Layers (except home marker)
+            mapLayers.forEach(layer => map.removeLayer(layer));
+            mapLayers = [];
 
             socket.emit('start-tracking', url);
         }
@@ -114,69 +376,89 @@
             totalRequests++;
             const isViolation = data.violations.length > 0;
             
+            // Score Logic
             if(isViolation) {
                 totalViolations++;
+                score -= 2;
+                if(data.isTracker) score -= 3;
+            }
+            if(score < 0) score = 0;
+            updateStats();
+
+            // --- MAP DRAWING ---
+            if (data.geo && data.geo.country && data.geo.lat) {
+                const { lat, lon, country } = data.geo;
                 
-                // --- SCORE ALGORITHM ---
-                // Deduct points based on severity
-                data.violations.forEach(v => {
-                    if (v.issue.includes('Privacy Breach')) auditScore -= 20; // Severe
-                    else if (v.issue.includes('Security')) auditScore -= 10; // Medium
-                    else auditScore -= 2; // Standard Tracker
-                });
+                // Only draw if outside India or interesting
+                if (country !== 'India' || data.isTracker) {
+                    if (!activeCountries.has(country)) {
+                        activeCountries.add(country);
+                        document.getElementById('country-list').innerText = Array.from(activeCountries).join(' // ');
+                    }
+
+                    const color = data.isTracker ? '#f43f5e' : '#10b981';
+                    
+                    // Draw Line
+                    const line = L.polyline([[20.5937, 78.9629], [lat, lon]], {
+                        color: color, weight: 0.5, opacity: 0.4
+                    }).addTo(map);
+                    mapLayers.push(line);
+
+                    // Draw Dot
+                    const dot = L.circleMarker([lat, lon], {
+                        radius: 3, color: color, fillColor: color, fillOpacity: 0.8
+                    }).addTo(map).bindPopup(country);
+                    mapLayers.push(dot);
+                }
             }
 
-            // Cap score at 0
-            if (auditScore < 0) auditScore = 0;
+            // --- LOG ENTRY ---
+            const logsDiv = document.getElementById('logs');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            let issuesHtml = '';
+            data.violations.forEach(v => {
+                issuesHtml += `<div class="violation-row">${v.issue}</div>`;
+            });
 
-            updateStats();
-            addLogEntry(data);
+            const trackerBadge = data.isTracker ? '<span class="badge-tracker">TRACKER</span>' : '';
+            const locationTxt = data.geo.country ? data.geo.country : 'Unknown';
+
+            entry.innerHTML = `
+                <div class="log-top">
+                    <div>${trackerBadge}<span class="domain">${data.domain}</span></div>
+                    <div class="country">${locationTxt}</div>
+                </div>
+                ${issuesHtml}
+            `;
+            
+            logsDiv.prepend(entry);
         });
 
         socket.on('status', (msg) => {
-            document.getElementById('statusText').innerText = msg;
+            document.getElementById('status').innerText = msg;
+            if(msg.includes("Complete")) {
+                document.getElementById('status').style.color = 'var(--text-main)';
+            }
         });
 
         function updateStats() {
             document.getElementById('reqCount').innerText = totalRequests;
             document.getElementById('violationCount').innerText = totalViolations;
-
-            // Update Grade based on Score
-            const gradeEl = document.getElementById('gradeScore');
-            let grade = 'A';
-            let color = '#22c55e'; // Green
-
-            if (auditScore < 90) { grade = 'B'; color = '#38bdf8'; } // Blue
-            if (auditScore < 70) { grade = 'C'; color = '#f59e0b'; } // Orange
-            if (auditScore < 50) { grade = 'D'; color = '#f97316'; } // Dark Orange
-            if (auditScore < 30) { grade = 'F'; color = '#ef4444'; } // Red
-
-            gradeEl.innerText = grade;
-            gradeEl.style.color = color;
-        }
-
-        function addLogEntry(data) {
-            const logsDiv = document.getElementById('logs');
-            const entry = document.createElement('div');
-            const isViolation = data.violations.length > 0;
-
-            entry.className = isViolation ? 'log-entry violation-entry' : 'log-entry';
-
-            let violationHtml = '';
-            data.violations.forEach(v => {
-                violationHtml += `<span class="violation-desc">⚠️ ${v.issue}</span>`;
-            });
-
-            entry.innerHTML = `
-                <div>
-                    ${isViolation ? '<span class="badge-violation">VIOLATION</span>' : ''}
-                    <span class="method">${data.method}</span>
-                    <span style="color: #cbd5e1">${data.url.substring(0, 90)}...</span>
-                </div>
-                ${violationHtml}
-            `;
             
-            logsDiv.prepend(entry);
+            const circle = document.getElementById('gradeCircle');
+            let grade = 'A';
+            let color = 'var(--accent-green)';
+
+            if (score < 90) { grade = 'B'; color = 'var(--accent-cyan)'; }
+            if (score < 70) { grade = 'C'; color = '#f59e0b'; } // Orange
+            if (score < 50) { grade = 'D'; color = '#f97316'; } // Dark Orange
+            if (score < 30) { grade = 'F'; color = 'var(--accent-red)'; }
+
+            circle.innerText = grade;
+            circle.style.borderColor = color;
+            circle.style.color = color;
         }
     </script>
 </body>
