@@ -1,0 +1,20 @@
+# Ignore dependencies (we install them inside the container)
+node_modules
+target
+
+# Ignore logs and debug files
+npm-debug.log
+pnpm-debug.log
+*.log
+
+# Ignore git metadata
+.git
+.gitignore
+.dockerignore
+
+# Ignore environment files (pass these via docker run --env-file or k8s secrets)
+.env*
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
