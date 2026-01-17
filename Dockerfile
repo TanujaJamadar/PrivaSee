@@ -11,7 +11,7 @@ COPY backend/src ./src
 
 
 # ---------- rust build ----------
-FROM rust:1.85-bookworm AS rust_builder
+FROM rust:1.86-bookworm AS rust_builder
 WORKDIR /app
 
 COPY backend/ ./backend/

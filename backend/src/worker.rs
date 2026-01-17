@@ -37,14 +37,14 @@ pub async fn run_node_worker(
         if let Ok(msg) = serde_json::from_str::<NodeMessage>(&line) {
             match msg {
                 NodeMessage::Status { message } => {
-                    let _ = socket.emit("status", message);
+                    let _ = socket.emit("status", &message);
                 }
                 NodeMessage::Error { message } => {
-                    let _ = socket.emit("status", format!("Error: {}", message));
+                    let _ = socket.emit("status", &format!("Error: {}", message));
                 }
                 NodeMessage::Traffic { data } => {
                     let update = analyze_traffic(&data, &main_domain, &state);
-                    let _ = socket.emit("traffic-update", update);
+                    let _ = socket.emit("traffic-update", &update);
                 }
             }
         }
