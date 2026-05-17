@@ -1,7 +1,8 @@
 # ---------- node deps for worker ----------
 FROM node:20-bookworm-slim AS node_builder
 WORKDIR /app/backend
-RUN corepack enable
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+RUN corepack enable && corepack prepare pnpm@10.23.0 --activate
 
 COPY backend/package.json backend/pnpm-lock.yaml backend/pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile --prod || pnpm install --prod
