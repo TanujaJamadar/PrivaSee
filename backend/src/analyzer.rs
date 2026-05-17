@@ -32,7 +32,19 @@ pub fn analyze_traffic(req: &RawTraffic, main_domain: &str, state: &Arc<AppState
 
     if has_pii(&req.url) {
         violations.push(Violation {
-            issue: "PII (Email) Leak".to_string(),
+            issue: "PII (Email) Leak in URL".to_string(),
+            severity: "critical".to_string(),
+        });
+    }
+
+    if req
+        .post_data
+        .as_deref()
+        .map(has_pii)
+        .unwrap_or(false)
+    {
+        violations.push(Violation {
+            issue: "PII (Email) Leak in POST Body".to_string(),
             severity: "critical".to_string(),
         });
     }
