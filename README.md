@@ -15,9 +15,28 @@ It is built with:
 - Total network requests made by the scanned page
 - Third-party tracker detection
 - HTTP request warnings
-- Possible email/PII leaks in request URLs
+- Possible email/PII leaks in request URLs and POST bodies
 - Destination countries for network calls
 - A simple compliance score inspired by DPDP Act 2023 checks
+- A downloadable Privacy Evidence Report with scan summary and request evidence
+
+## Standout Feature: Privacy Evidence Report
+
+PrivaSee now builds a live evidence report while the scan is running. It turns raw network traffic into a structured audit artifact that can be exported as JSON.
+
+The report includes:
+
+- Target URL and scan timestamps
+- Final compliance grade and risk score
+- Total requests and violations
+- Unique tracker domains
+- Countries contacted during the scan
+- Critical findings count
+- Top contacted domain
+- Most common privacy issue
+- Full request-level evidence trail
+
+
 
 ## Project Structure
 
@@ -144,7 +163,8 @@ http://localhost:3000
 2. Open `http://localhost:3000`.
 3. Enter a full URL, for example `https://instagram.com`.
 4. Click `SCAN`.
-5. Watch the request count, violations, traffic feed, compliance grade, and map update in real time.
+5. Watch the request count, violations, traffic feed, compliance grade, evidence report, and map update in real time.
+6. Click `EXPORT` after the scan completes to download the Privacy Evidence Report.
 
 Always include the protocol in the URL:
 
