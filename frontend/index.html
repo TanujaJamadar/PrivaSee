@@ -33,7 +33,7 @@
 
       body {
         margin: 0;
-        padding: 20px;
+        padding: 14px;
         background-color: var(--bg-color);
         background-image:
           radial-gradient(
@@ -60,10 +60,10 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-bottom: 20px;
+        padding-bottom: 12px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        margin-bottom: 20px;
-        height: 80px;
+        margin-bottom: 12px;
+        height: 62px;
       }
 
       .brand {
@@ -133,16 +133,23 @@
       /* MAIN DASHBOARD GRID */
       .dashboard {
         display: grid;
-        grid-template-columns: 2fr 1fr;
-        /* Map gets 2/3 space */
-        gap: 20px;
+        grid-template-columns: minmax(0, 1.38fr) minmax(380px, 0.92fr);
+        gap: 12px;
         flex: 1;
         min-height: 0;
         /* Critical for scrolling to work */
       }
 
+      .visual-stack {
+        display: grid;
+        grid-template-rows: minmax(330px, 1.35fr) minmax(220px, 0.75fr);
+        gap: 12px;
+        min-height: 0;
+      }
+
       /* MAP CONTAINER */
-      .map-panel {
+      .map-panel,
+      .globe-panel {
         background: var(--panel-bg);
         border: var(--border);
         border-radius: 12px;
@@ -158,6 +165,14 @@
         background: #0b0f19;
       }
 
+      #globe {
+        height: 100%;
+        width: 100%;
+        background:
+          radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.12), transparent 45%),
+          #030712;
+      }
+
       .map-overlay {
         position: absolute;
         bottom: 20px;
@@ -171,11 +186,31 @@
         font-size: 0.8rem;
       }
 
+      .globe-overlay {
+        position: absolute;
+        inset: 14px auto auto 14px;
+        z-index: 5;
+        font-family: "JetBrains Mono", monospace;
+        pointer-events: none;
+      }
+
+      .globe-title {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+      }
+
+      .globe-subtitle {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-main);
+      }
+
       /* RIGHT SIDEBAR (STATS + LOGS) */
       .sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
+        display: grid;
+        grid-template-rows: auto auto auto minmax(240px, 1fr);
+        gap: 8px;
         min-height: 0;
         /* Allows children to scroll */
       }
@@ -184,19 +219,19 @@
       .stats-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        gap: 8px;
       }
 
       .card {
         background: var(--panel-bg);
         border: var(--border);
-        padding: 15px;
+        padding: 9px;
         border-radius: 8px;
         text-align: center;
       }
 
       .card-val {
-        font-size: 2rem;
+        font-size: 1.45rem;
         font-weight: 700;
         display: block;
         line-height: 1;
@@ -204,7 +239,7 @@
       }
 
       .card-lbl {
-        font-size: 0.7rem;
+        font-size: 0.64rem;
         color: var(--text-muted);
         text-transform: uppercase;
         letter-spacing: 1px;
@@ -214,43 +249,154 @@
         background: var(--panel-bg);
         border: var(--border);
         border-radius: 8px;
-        padding: 15px;
+        padding: 9px 12px;
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
 
       .grade-circle {
-        width: 50px;
-        height: 50px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
         border: 3px solid var(--accent-green);
         color: var(--accent-green);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 1.28rem;
         font-weight: 700;
       }
 
-      /* LOGS PANEL */
-      .logs-panel {
-        flex: 1;
+      .report-panel {
         background: var(--panel-bg);
         border: var(--border);
         border-radius: 12px;
         display: flex;
         flex-direction: column;
         overflow: hidden;
+      }
+
+      .report-header {
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.72rem;
+      }
+
+      .report-action {
+        min-width: 82px;
+        height: 26px;
+        padding: 0 8px;
+        border-radius: 5px;
+        background: rgba(16, 185, 129, 0.16);
+        color: var(--accent-green);
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        font-size: 0.64rem;
+      }
+
+      .report-action:disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+      }
+
+      .report-body {
+        padding: 8px 10px 10px;
+      }
+
+      .risk-meter {
+        height: 7px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .risk-fill {
+        width: 0%;
+        height: 100%;
+        background: var(--accent-green);
+        transition:
+          width 0.25s ease,
+          background 0.25s ease;
+      }
+
+      .report-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        margin: 7px 0;
+      }
+
+      .mini-stat {
+        padding: 5px 5px;
+        border-radius: 7px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        text-align: center;
+      }
+
+      .mini-stat strong {
+        display: block;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.9rem;
+      }
+
+      .mini-stat span {
+        display: block;
+        margin-top: 2px;
+        color: var(--text-muted);
+        font-size: 0.56rem;
+        text-transform: uppercase;
+      }
+
+      .insight-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+
+      .insight-item {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 3px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.66rem;
+      }
+
+      .insight-item span:first-child {
+        color: var(--text-muted);
+      }
+
+      .insight-item span:last-child {
+        color: var(--text-main);
+        text-align: right;
+        word-break: break-word;
+      }
+
+      /* LOGS PANEL */
+      .logs-panel {
+        background: var(--panel-bg);
+        border: var(--border);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
         /* Vital container rule */
       }
 
       .logs-header {
-        padding: 15px;
+        padding: 10px;
         background: rgba(255, 255, 255, 0.03);
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         font-family: "JetBrains Mono", monospace;
-        font-size: 0.8rem;
+        font-size: 0.74rem;
         display: flex;
         justify-content: space-between;
       }
@@ -264,10 +410,10 @@
 
       /* LOG ITEM STYLING */
       .log-entry {
-        padding: 10px 15px;
+        padding: 8px 10px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         font-family: "JetBrains Mono", monospace;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         transition: background 0.2s;
       }
 
@@ -309,6 +455,26 @@
         opacity: 0.8;
       }
 
+      @media (max-width: 1100px) {
+        body {
+          height: auto;
+          min-height: 100vh;
+          overflow: auto;
+        }
+
+        .dashboard {
+          grid-template-columns: 1fr;
+        }
+
+        .visual-stack {
+          grid-template-rows: 420px 280px;
+        }
+
+        .sidebar {
+          grid-template-rows: auto auto auto 360px;
+        }
+      }
+
       /* Custom Scrollbar */
       ::-webkit-scrollbar {
         width: 6px;
@@ -347,20 +513,30 @@
     </header>
 
     <div class="dashboard">
-      <div class="map-panel">
-        <div id="map"></div>
-        <div class="map-overlay">
-          <div
-            style="
-              color: var(--text-muted);
-              font-size: 0.7rem;
-              margin-bottom: 5px;
-            "
-          >
-            ACTIVE DATA EXFILTRATION PATHS
+      <div class="visual-stack">
+        <div class="map-panel">
+          <div id="map"></div>
+          <div class="map-overlay">
+            <div
+              style="
+                color: var(--text-muted);
+                font-size: 0.7rem;
+                margin-bottom: 5px;
+              "
+            >
+              ACTIVE DATA EXFILTRATION PATHS
+            </div>
+            <div id="country-list" style="color: white; font-weight: 700">
+              Waiting for target...
+            </div>
           </div>
-          <div id="country-list" style="color: white; font-weight: 700">
-            Waiting for target...
+        </div>
+
+        <div class="globe-panel">
+          <canvas id="globe"></canvas>
+          <div class="globe-overlay">
+            <div class="globe-title">3D CONNECTION GLOBE</div>
+            <div class="globe-subtitle" id="globeStatus">Awaiting scan</div>
           </div>
         </div>
       </div>
@@ -397,6 +573,48 @@
           <div class="grade-circle" id="gradeCircle">A</div>
         </div>
 
+        <div class="report-panel">
+          <div class="report-header">
+            <span>PRIVACY EVIDENCE REPORT</span>
+            <button class="report-action" id="exportBtn" onclick="exportReport()" disabled>
+              EXPORT
+            </button>
+          </div>
+          <div class="report-body">
+            <div class="risk-meter">
+              <div class="risk-fill" id="riskFill"></div>
+            </div>
+            <div class="report-grid">
+              <div class="mini-stat">
+                <strong id="trackerCount">0</strong>
+                <span>Trackers</span>
+              </div>
+              <div class="mini-stat">
+                <strong id="countryCount">0</strong>
+                <span>Countries</span>
+              </div>
+              <div class="mini-stat">
+                <strong id="criticalCount">0</strong>
+                <span>Critical</span>
+              </div>
+            </div>
+            <div class="insight-list">
+              <div class="insight-item">
+                <span>Risk</span>
+                <span id="riskLabel">Waiting for scan</span>
+              </div>
+              <div class="insight-item">
+                <span>Top Domain</span>
+                <span id="topDomain">-</span>
+              </div>
+              <div class="insight-item">
+                <span>Main Issue</span>
+                <span id="topIssue">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="logs-panel">
           <div class="logs-header">
             <span>LIVE TRAFFIC FEED</span>
@@ -409,6 +627,7 @@
 
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 
     <script>
       const socket = io();
@@ -453,27 +672,58 @@
       let score = 100;
       let activeCountries = new Set();
       let mapLayers = [];
+      let currentTarget = "";
+      let scanStartedAt = null;
+      let scanCompletedAt = null;
+      let evidenceLog = [];
+      let domainStats = new Map();
+      let countryStats = new Map();
+      let issueStats = new Map();
+      let trackerDomains = new Set();
+      let criticalCount = 0;
+      let globeScene;
+      let globeCamera;
+      let globeRenderer;
+      let globeGroup;
+      let globeConnections = [];
+      let globeResizeObserver;
+
+      initGlobe();
 
       function startAudit() {
         const url = document.getElementById("urlInput").value;
         if (!url) return;
 
         // UI Reset
+        currentTarget = url;
+        scanStartedAt = new Date().toISOString();
+        scanCompletedAt = null;
+        evidenceLog = [];
+        domainStats.clear();
+        countryStats.clear();
+        issueStats.clear();
+        trackerDomains.clear();
+        criticalCount = 0;
+
         document.getElementById("logs").innerHTML = "";
         document.getElementById("status").innerText = "SCANNING NETWORK...";
         document.getElementById("status").style.borderColor =
           "var(--accent-green)";
         document.getElementById("country-list").innerText = "India (Origin)";
+        document.getElementById("globeStatus").innerText = "Capturing routes";
+        document.getElementById("exportBtn").disabled = true;
 
         totalRequests = 0;
         totalViolations = 0;
         score = 100;
         activeCountries.clear();
         updateStats();
+        updateReport();
 
         // Clear Map Layers (except home marker)
         mapLayers.forEach((layer) => map.removeLayer(layer));
         mapLayers = [];
+        clearGlobeConnections();
 
         socket.emit("start-tracking", url);
       }
@@ -481,6 +731,7 @@
       socket.on("traffic-update", (data) => {
         totalRequests++;
         const isViolation = data.violations.length > 0;
+        recordEvidence(data);
 
         // Score Logic
         if (isViolation) {
@@ -529,6 +780,7 @@
               .addTo(map)
               .bindPopup(country);
             mapLayers.push(dot);
+            addGlobeConnection(lat, lon, data.isTracker);
           }
         }
 
@@ -561,7 +813,12 @@
       socket.on("status", (msg) => {
         document.getElementById("status").innerText = msg;
         if (msg.includes("Complete")) {
+          scanCompletedAt = new Date().toISOString();
           document.getElementById("status").style.color = "var(--text-main)";
+          document.getElementById("globeStatus").innerText =
+            `${globeConnections.length} live routes mapped`;
+          document.getElementById("exportBtn").disabled =
+            evidenceLog.length === 0;
         }
       });
 
@@ -593,6 +850,278 @@
         circle.innerText = grade;
         circle.style.borderColor = color;
         circle.style.color = color;
+        updateReport();
+      }
+
+      function recordEvidence(data) {
+        const country =
+          data.geo && data.geo.country ? data.geo.country : "Unknown";
+        const violations = data.violations || [];
+
+        evidenceLog.push({
+          time: new Date().toISOString(),
+          domain: data.domain,
+          url: data.url,
+          method: data.method,
+          resourceType: data.type,
+          country,
+          isTracker: data.isTracker,
+          violations,
+        });
+
+        domainStats.set(data.domain, (domainStats.get(data.domain) || 0) + 1);
+        countryStats.set(country, (countryStats.get(country) || 0) + 1);
+
+        if (data.isTracker) {
+          trackerDomains.add(data.domain);
+        }
+
+        violations.forEach((violation) => {
+          issueStats.set(
+            violation.issue,
+            (issueStats.get(violation.issue) || 0) + 1,
+          );
+          if (violation.severity === "critical") {
+            criticalCount++;
+          }
+        });
+      }
+
+      function updateReport() {
+        const risk = Math.max(0, 100 - score);
+        const riskFill = document.getElementById("riskFill");
+        const riskLabel = document.getElementById("riskLabel");
+
+        riskFill.style.width = `${risk}%`;
+        if (risk >= 70) {
+          riskFill.style.background = "var(--accent-red)";
+          riskLabel.innerText = "Severe exposure";
+        } else if (risk >= 40) {
+          riskFill.style.background = "#f97316";
+          riskLabel.innerText = "Elevated exposure";
+        } else if (risk >= 15) {
+          riskFill.style.background = "#f59e0b";
+          riskLabel.innerText = "Moderate exposure";
+        } else if (totalRequests > 0) {
+          riskFill.style.background = "var(--accent-green)";
+          riskLabel.innerText = "Low exposure";
+        } else {
+          riskFill.style.background = "var(--accent-green)";
+          riskLabel.innerText = "Waiting for scan";
+        }
+
+        document.getElementById("trackerCount").innerText =
+          trackerDomains.size;
+        document.getElementById("countryCount").innerText =
+          countryStats.size;
+        document.getElementById("criticalCount").innerText = criticalCount;
+        document.getElementById("topDomain").innerText =
+          topFromMap(domainStats) || "-";
+        document.getElementById("topIssue").innerText =
+          topFromMap(issueStats) || "-";
+      }
+
+      function topFromMap(map) {
+        let topKey = "";
+        let topValue = 0;
+        map.forEach((value, key) => {
+          if (value > topValue) {
+            topKey = key;
+            topValue = value;
+          }
+        });
+
+        return topKey ? `${topKey} (${topValue})` : "";
+      }
+
+      function exportReport() {
+        const report = {
+          tool: "PrivaSee",
+          feature: "Privacy Evidence Report",
+          target: currentTarget,
+          startedAt: scanStartedAt,
+          completedAt: scanCompletedAt || new Date().toISOString(),
+          summary: {
+            score,
+            grade: document.getElementById("gradeCircle").innerText,
+            totalRequests,
+            totalViolations,
+            trackerDomains: Array.from(trackerDomains),
+            countries: Array.from(countryStats.keys()),
+            criticalFindings: criticalCount,
+            topDomain: topFromMap(domainStats),
+            topIssue: topFromMap(issueStats),
+          },
+          evidence: evidenceLog,
+        };
+
+        const blob = new Blob([JSON.stringify(report, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        const safeTarget = currentTarget
+          .replace(/^https?:\/\//, "")
+          .replace(/[^a-z0-9]+/gi, "-")
+          .replace(/^-|-$/g, "")
+          .toLowerCase();
+
+        anchor.href = url;
+        anchor.download = `privasee-report-${safeTarget || "scan"}.json`;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function initGlobe() {
+        const canvas = document.getElementById("globe");
+        globeScene = new THREE.Scene();
+        globeCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+        globeCamera.position.set(0, 0, 4.2);
+
+        globeRenderer = new THREE.WebGLRenderer({
+          canvas,
+          alpha: true,
+          antialias: true,
+        });
+        globeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        globeGroup = new THREE.Group();
+        globeScene.add(globeGroup);
+
+        const globe = new THREE.Mesh(
+          new THREE.SphereGeometry(1.35, 64, 64),
+          new THREE.MeshStandardMaterial({
+            color: 0x06213b,
+            metalness: 0.15,
+            roughness: 0.65,
+            emissive: 0x02111f,
+          }),
+        );
+        globeGroup.add(globe);
+
+        const wire = new THREE.Mesh(
+          new THREE.SphereGeometry(1.355, 32, 32),
+          new THREE.MeshBasicMaterial({
+            color: 0x06b6d4,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.16,
+          }),
+        );
+        globeGroup.add(wire);
+
+        const origin = createPoint(20.5937, 78.9629, 0x06b6d4, 0.04);
+        globeGroup.add(origin);
+
+        const ambient = new THREE.AmbientLight(0xffffff, 0.45);
+        const key = new THREE.DirectionalLight(0xffffff, 1.6);
+        key.position.set(3, 2, 4);
+        globeScene.add(ambient, key);
+
+        globeResizeObserver = new ResizeObserver(resizeGlobe);
+        globeResizeObserver.observe(canvas);
+        resizeGlobe();
+        animateGlobe();
+      }
+
+      function resizeGlobe() {
+        const canvas = document.getElementById("globe");
+        const rect = canvas.getBoundingClientRect();
+        const width = Math.max(1, rect.width);
+        const height = Math.max(1, rect.height);
+        globeCamera.aspect = width / height;
+        globeCamera.updateProjectionMatrix();
+        globeRenderer.setSize(width, height, false);
+      }
+
+      function animateGlobe() {
+        requestAnimationFrame(animateGlobe);
+        globeGroup.rotation.y += 0.0025;
+        globeConnections.forEach((item) => {
+          item.pulse.material.opacity =
+            0.35 + Math.sin(Date.now() * 0.006 + item.phase) * 0.22;
+        });
+        globeRenderer.render(globeScene, globeCamera);
+      }
+
+      function latLonToVector3(lat, lon, radius = 1.38) {
+        const phi = (90 - lat) * (Math.PI / 180);
+        const theta = (lon + 180) * (Math.PI / 180);
+        return new THREE.Vector3(
+          -radius * Math.sin(phi) * Math.cos(theta),
+          radius * Math.cos(phi),
+          radius * Math.sin(phi) * Math.sin(theta),
+        );
+      }
+
+      function createPoint(lat, lon, color, size) {
+        const point = new THREE.Mesh(
+          new THREE.SphereGeometry(size, 16, 16),
+          new THREE.MeshBasicMaterial({ color }),
+        );
+        point.position.copy(latLonToVector3(lat, lon));
+        return point;
+      }
+
+      function addGlobeConnection(lat, lon, isTracker) {
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+        if (globeConnections.length > 80) {
+          const old = globeConnections.shift();
+          globeGroup.remove(old.line, old.point, old.pulse);
+        }
+
+        const origin = latLonToVector3(20.5937, 78.9629);
+        const target = latLonToVector3(lat, lon);
+        const mid = origin
+          .clone()
+          .add(target)
+          .normalize()
+          .multiplyScalar(1.75);
+        const curve = new THREE.QuadraticBezierCurve3(origin, mid, target);
+        const color = isTracker ? 0xf43f5e : 0x10b981;
+
+        const line = new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints(curve.getPoints(36)),
+          new THREE.LineBasicMaterial({
+            color,
+            transparent: true,
+            opacity: isTracker ? 0.68 : 0.42,
+          }),
+        );
+        const point = new THREE.Mesh(
+          new THREE.SphereGeometry(isTracker ? 0.038 : 0.03, 16, 16),
+          new THREE.MeshBasicMaterial({ color }),
+        );
+        point.position.copy(target);
+
+        const pulse = new THREE.Mesh(
+          new THREE.SphereGeometry(isTracker ? 0.055 : 0.045, 16, 16),
+          new THREE.MeshBasicMaterial({
+            color,
+            transparent: true,
+            opacity: 0.45,
+          }),
+        );
+        pulse.position.copy(target);
+
+        globeGroup.add(line, point, pulse);
+        globeConnections.push({
+          line,
+          point,
+          pulse,
+          phase: Math.random() * Math.PI * 2,
+        });
+        document.getElementById("globeStatus").innerText =
+          `${globeConnections.length} live routes mapped`;
+      }
+
+      function clearGlobeConnections() {
+        globeConnections.forEach((item) => {
+          globeGroup.remove(item.line, item.point, item.pulse);
+        });
+        globeConnections = [];
       }
     </script>
   </body>
